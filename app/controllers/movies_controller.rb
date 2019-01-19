@@ -11,17 +11,24 @@ class MoviesController < ApplicationController
   end
 
   def index
-    # @movie = Movie.new    # get the movie instance and work localy
+    # @movie = Movie.new    get the movie instance and work localy
     @movies = Movie.all
     @all_ratings = Movie.ratings
+    @checked = Hash.new("1")  # store hash with default values of 1
 
+    
+    # Sorting by column
     if params[:titlesort] and params[:hilite]
       @movies = Movie.order(:title)
       @bgcolor = "hilite"
     elsif params[:rdatesort]
       @movies = Movie.order(:release_date)
     elsif params[:ratings]
+      # ...But, wait, this breaks MVC principle. View should not touch params at all. 
+      # All these works should be done at controller level. What if the params is incorrect?
+      # You need controller to respond that, instead of passing that responsibility to view.
       @movies = Movie.with_ratings params[:ratings].keys
+      @checked = params[:ratings]
     end
     
   end
