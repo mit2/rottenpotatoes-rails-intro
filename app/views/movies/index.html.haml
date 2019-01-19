@@ -4,9 +4,9 @@
 %table#movies
   %thead
     %tr
-      %th Movie Title
+      %th{class: @bgcolor}= link_to 'Movie Title' , movies_path(:titlesort => true, :hilite => true)
       %th Rating
-      %th Release Date
+      %th= link_to 'Release Date' , movies_path(:rdatesort => true)
       %th More Info
   %tbody
     - @movies.each do |movie|
@@ -17,3 +17,5 @@
         %td= link_to "More about #{movie.title}", movie_path(movie)
 
 = link_to 'Add new movie', new_movie_path
+
+
