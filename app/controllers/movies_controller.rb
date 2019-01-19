@@ -1,5 +1,6 @@
 class MoviesController < ApplicationController
-
+  
+  
   def movie_params
     params.require(:movie).permit(:title, :rating, :description, :release_date)
   end
@@ -11,26 +12,40 @@ class MoviesController < ApplicationController
   end
 
   def index
+    # byebug
     # @movie = Movie.new    get the movie instance and work localy
-    @movies = Movie.all
     @all_ratings = Movie.ratings
     @checked = Hash.new("1")  # store hash with default values of 1
 
-    
-    # Sorting by column
-    if params[:titlesort] and params[:hilite]
-      @movies = Movie.order(:title)
-      @bgcolor = "hilite"
-    elsif params[:rdatesort]
-      @movies = Movie.order(:release_date)
-    elsif params[:ratings]
-      # ...But, wait, this breaks MVC principle. View should not touch params at all. 
-      # All these works should be done at controller level. What if the params is incorrect?
-      # You need controller to respond that, instead of passing that responsibility to view.
-      @movies = Movie.with_ratings params[:ratings].keys
-      @checked = params[:ratings]
+    if session[:usrsettings] != nil and !session[:usrsettings].empty? and params.size == 2 # url with no additional params
+      # collect all params and build view using them
+      @movies = Movie.session_prev_state(session[:usrsettings])
+      @bgcolor = session[:usrsettings]["bgcolor"]
+      @checked = session[:usrsettings]["ratings"] if session[:usrsettings]["ratings"] != nil
+    else 
+      session[:usrsettings] = {} if session[:usrsettings] == nil  ||  !session[:usrsettings].empty? # clean session prev state to store new state
+      # Sorting by column
+      if params[:titlesort] and params[:hilite]
+        @movies = Movie.order(:title)
+        @bgcolor = "hilite"
+        session[:usrsettings]["bgcolor"] = "hilite"
+        session[:usrsettings]["titlesort"] = params[:titlesort]
+        session[:usrsettings]["hilite"] = params[:hilite]
+      elsif params[:rdatesort]
+        @movies = Movie.order(:release_date)
+        session[:usrsettings]["rdatesort"] = params[:rdatesort]
+      elsif params[:ratings]
+        # ...But, wait, this breaks MVC principle. View should not touch params at all. 
+        # All these works should be done at controller level. What if the params is incorrect?
+        # You need controller to respond that, instead of passing that responsibility to view.
+        
+        @movies = Movie.with_ratings params[:ratings].keys
+        @checked = params[:ratings]
+        session[:usrsettings]["ratings"] = params[:ratings]
+      else
+        @movies = Movie.all
+      end
     end
-    
   end
 
   def new
