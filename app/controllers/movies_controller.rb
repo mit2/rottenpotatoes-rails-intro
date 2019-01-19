@@ -11,17 +11,18 @@ class MoviesController < ApplicationController
   end
 
   def index
+    # @movie = Movie.new    # get the movie instance and work localy
     @movies = Movie.all
+    @all_ratings = Movie.ratings
+
     if params[:titlesort] and params[:hilite]
       @movies = Movie.order(:title)
       @bgcolor = "hilite"
     elsif params[:rdatesort]
       @movies = Movie.order(:release_date)
-    end  
-    
-    
-    
-    
+    elsif params[:ratings]
+      @movies = Movie.with_ratings params[:ratings].keys
+    end
     
   end
 
