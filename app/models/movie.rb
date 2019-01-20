@@ -14,9 +14,9 @@ class Movie < ActiveRecord::Base
     # Get all params from session and build db query
     def self.session_prev_state(usrsettings)
         if usrsettings["titlesort"] and usrsettings["hilite"]
-            @movies = Movie.order(:title)
+            usrsettings["ratings"] ? Movie.where({ rating: usrsettings["ratings"].keys}).order(:title) : Movie.order(:title)
         elsif usrsettings["rdatesort"]
-            Movie.order(:release_date)
+            usrsettings["ratings"] ? Movie.where({ rating: usrsettings["ratings"].keys}).order(:release_date) : Movie.order(:release_date)
         elsif usrsettings["ratings"]
             Movie.where({ rating: usrsettings["ratings"].keys})  
         end
