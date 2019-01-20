@@ -10,6 +10,15 @@ class MoviesController < ApplicationController
     @movie = Movie.find(id) # look up movie by unique ID
     # will render app/views/movies/show.<extension> by default
   end
+  
+  def sort_title
+    # they wanted to use RESTfull route for sorting ..and do redirect to movies#index, i think
+    # redirect_to movies_path
+  end
+  
+  def sort_rdate
+    # redirect_to movies_path
+  end
 
   def index
     # byebug
@@ -21,14 +30,16 @@ class MoviesController < ApplicationController
     
     # Add any new params to session and delete unwanted param
     if params[:titlesort] and params[:hilite]
-      session[:userfilter]["bgcolor"] = "hilite"
+      session[:userfilter]["bgcolor_tilte"] = "hilite"
       session[:userfilter]["titlesort"] = params[:titlesort]
       session[:userfilter]["hilite"] = params[:hilite]
       session[:userfilter].delete("rdatesort") if session[:userfilter]["rdatesort"] != nil
+      session[:userfilter].delete("bgcolor_rdate") if session[:userfilter]["bgcolor_rdate"] != nil
     elsif params[:rdatesort]
       session[:userfilter]["rdatesort"] = params[:rdatesort]
+      session[:userfilter]["bgcolor_rdate"] = "hilite"
       session[:userfilter].delete("titlesort") if session[:userfilter]["titlesort"] != nil
-      session[:userfilter].delete("bgcolor") if session[:userfilter]["bgcolor"] != nil
+      session[:userfilter].delete("bgcolor_tilte") if session[:userfilter]["bgcolor_tilte"] != nil
     elsif params[:ratings]
       # ...But, wait, this breaks MVC principle. View should not touch params at all. 
       # All these works should be done at controller level. What if the params is incorrect?
@@ -42,10 +53,12 @@ class MoviesController < ApplicationController
     if session[:userfilter] != nil and !session[:userfilter].empty? then
       # collect all params and build view using them
       @movies = Movie.session_prev_state(session[:userfilter])
-      @bgcolor = session[:userfilter]["bgcolor"] if session[:userfilter]["bgcolor"] != nil
+      @bgcolor_title = session[:userfilter]["bgcolor_tilte"] if session[:userfilter]["bgcolor_tilte"] != nil
+      @bgcolor_rdate = session[:userfilter]["bgcolor_rdate"] if session[:userfilter]["bgcolor_rdate"] != nil
       @checked = session[:userfilter]["ratings"] if session[:userfilter]["ratings"] != nil
+      
     end
-
+    # redirect_to movies_path
   end
 
   def new
