@@ -4,6 +4,8 @@ Rails.application.routes.draw do
 
   # You can have the root of your site routed with "root"
   root 'movies#index'
+  get "/movies/sortbt" => "movies#sort_by_title"          # to keep app RESTfull add custom routes special resource request
+  get "/movies/sortbrd" => "movies#sort_by_release_date" 
 
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
