@@ -6,7 +6,8 @@ Rails.application.routes.draw do
   root 'movies#index'
   get "/movies/sortbt" => "movies#sort_by_title"          # to keep app RESTfull add custom routes special resource request
   get "/movies/sortbrd" => "movies#sort_by_release_date" 
-
+  get "/movies/filterbr" => "movies#filter_by_rating"
+  
   # Example of regular route:
   #   get 'products/:id' => 'catalog#view'
 

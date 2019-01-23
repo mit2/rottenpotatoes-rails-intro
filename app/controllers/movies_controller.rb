@@ -39,7 +39,18 @@ class MoviesController < ApplicationController
       session[:userfilter].delete("bgcolor_tilte") if session[:userfilter]["bgcolor_tilte"] != nil
       flash[:notice] = "Movies was sorted by Release Date successfully."
     end
-    
+    redirect_to movies_path
+  end
+  
+  def filter_by_rating
+    session[:userfilter] = {} if session[:userfilter] == nil
+    if params[:ratings] then
+      # ...But, wait, this breaks MVC principle. View should not touch params at all. 
+      # All these works should be done at controller level. What if the params is incorrect?
+      # You need controller to respond that, instead of passing that responsibility to view.
+      session[:userfilter]["ratings"] = params[:ratings]
+      flash[:notice] = "Movies was filtered by Raiting successfully."
+    end
     redirect_to movies_path
   end
 
@@ -50,15 +61,8 @@ class MoviesController < ApplicationController
     @checked = Hash.new("1")  # store hash with default values of 1
 
     session[:userfilter] = {} if session[:userfilter] == nil
-    if params[:ratings]
-      # ...But, wait, this breaks MVC principle. View should not touch params at all. 
-      # All these works should be done at controller level. What if the params is incorrect?
-      # You need controller to respond that, instead of passing that responsibility to view.
-      session[:userfilter]["ratings"] = params[:ratings]
-    else
-      @movies = Movie.all
-    end
-    
+    @movies = Movie.all
+
     # Exec query based on params stored in session
     if session[:userfilter] != nil and !session[:userfilter].empty? then
       # collect all params and build view using them
